@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Лисёнок и Ёжик — свадебное приключение</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Пиксельный шрифт -->
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background:
+        radial-gradient(circle at top, #ffcfb3 0, #ff8b6a 28%, #5a0a16 65%, #1b0205 100%);
+      font-family: "Press Start 2P", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #fff4ea;
+    }
+
+    #app {
+      width: 95%;
+      max-width: 900px;
+      padding: 16px;
+    }
+
+    .pixel-card {
+      border: 4px solid #2b050b;
+      background: linear-gradient(180deg, rgba(35, 2, 7, 0.95), rgba(16, 1, 4, 0.98));
+      box-shadow:
+        0 0 0 4px #ffb9a0,
+        0 0 0 8px #2b050b,
+        0 18px 0 8px #120106;
+      padding: 24px 20px 28px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pixel-header {
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .pixel-header h1 {
+      font-size: 14px;
+      line-height: 1.6;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .pixel-sub {
+      font-size: 9px;
+      margin-top: 8px;
+      opacity: 0.9;
+    }
+
+    /* Фон-улочка */
+    .lantern-row {
+      position: absolute;
+      top: 14px;
+      left: -20px;
+      right: -20px;
+      height: 22px;
+      background:
+        repeating-linear-gradient(
+          90deg,
+          rgba(255, 230, 200, 0.14),
+          rgba(255, 230, 200, 0.14) 8px,
+          transparent 8px,
+          transparent 36px
+        );
+      pointer-events: none;
+    }
+
+    .lantern {
+      position: absolute;
+      top: -6px;
+      width: 20px;
+      height: 26px;
+      border-radius: 10px;
+      background: radial-gradient(circle at 50% 30%, #fff5d7 0, #ffcf6b 35%, #ff5b3c 80%);
+      box-shadow: 0 0 12px 2px rgba(255, 173, 96, 0.9);
+      border: 2px solid #4b0507;
+    }
+    .lantern::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: -6px;
+      transform: translateX(-50%);
+      width: 2px;
+      height: 6px;
+      background: #f1e0c1;
+    }
+
+    .lantern.l1 { left: 12%; }
+    .lantern.l2 { left: 42%; }
+    .lantern.l3 { left: 72%; }
+
+    /* ЛАБИРИНТ-СБЛИЖЕНИЕ */
+    .maze {
+      margin: 6px 0 8px;
+      position: relative;
+      height: 22px;
+    }
+
+    .maze-line {
+      position: absolute;
+      top: 10px;
+      left: 6%;
+      right: 6%;
+      height: 4px;
+      background:
+        repeating-linear-gradient(
+          90deg,
+          #3e0c10,
+          #3e0c10 6px,
+          #6d1b22 6px,
+          #6d1b22 12px
+        );
+      border: 2px solid #120106;
+    }
+
+    .maze-fox,
+    .maze-hedgehog {
+      position: absolute;
+      top: 1px;
+      font-size: 14px;
+      text-shadow: 1px 1px #000;
+      transition: left 0.3s ease;
+    }
+
+    .maze-fox { left: 4%; }
+    .maze-hedgehog { right: 4%; }
+
+    .pixel-animals {
+      margin-top: 4px;
+      margin-bottom: 10px;
+      position: relative;
+      height: 130px;
+      background: linear-gradient(180deg, #2a0208 0, #40040c 45%, #3a0208 45%, #2a0105 100%);
+      border: 3px solid #120004;
+    }
+
+    .street-line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 52%;
+      height: 4px;
+      background: linear-gradient(90deg, #fbc99c, #ffc27b, #f19a5b);
+    }
+
+    .ground {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 38px;
+      background: repeating-linear-gradient(
+        90deg,
+        #3e130b,
+        #3e130b 10px,
+        #5a1b0f 10px,
+        #5a1b0f 20px
+      );
+      border-top: 3px solid #140205;
+    }
+
+    .pixel-animal {
+      width: 90px;
+      height: 90px;
+      border: 4px solid #120004;
+      background: repeating-linear-gradient(
+        45deg,
+        #ffb78e,
+        #ffb78e 6px,
+        #ff9966 6px,
+        #ff9966 12px
+      );
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 36px;
+      text-shadow: 2px 2px #000;
+      image-rendering: pixelated;
+      box-shadow: 0 0 0 3px #ffe0c4;
+      position: absolute;
+      bottom: 12px;
+      transition: transform 0.4s ease, box-shadow 0.2s ease;
+    }
+
+    .pixel-animal.fox { left: 18px; }
+
+    .pixel-animal.hedgehog {
+      right: 18px;
+      background: repeating-linear-gradient(
+        135deg,
+        #e3c4ff,
+        #e3c4ff 6px,
+        #c49aff 6px,
+        #c49aff 12px
+      );
+    }
+
+    .pixel-animal.active {
+      box-shadow:
+        0 0 0 3px #ffe0c4,
+        0 0 10px 2px rgba(255, 190, 155, 0.9);
+    }
+
+    .pixel-heart {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 64px;
+      font-size: 26px;
+      text-shadow: 2px 2px #000;
+      opacity: 0;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .pixel-heart.visible {
+      opacity: 1;
+      transform: translate(-50%, -10px);
+    }
+
+    .timeline {
+      margin: 10px 0 14px;
+      font-size: 8px;
+      opacity: 0.9;
+    }
+
+    .timeline span {
+      display: inline-block;
+      margin-right: 8px;
+    }
+
+    .dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border: 2px solid #ffb9a0;
+      margin-right: 3px;
+      vertical-align: middle;
+    }
+
+    .dot.active { background: #ffb9a0; }
+
+    .screen {
+      display: none;
+      margin-top: 8px;
+    }
+
+    .screen.active { display: block; }
+
+    .story-text {
+      font-size: 10px;
+      line-height: 1.7;
+      margin-bottom: 16px;
+      white-space: pre-line;
+    }
+
+    .small-caption {
+      font-size: 8px;
+      opacity: 0.8;
+      margin-top: 4px;
+    }
+
+    .buttons-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    button.pixel-btn {
+      font-family: "Press Start 2P", system-ui;
+      font-size: 9px;
+      padding: 8px 11px;
+      border: 3px solid #190104;
+      background: linear-gradient(#ffd37a, #ff9b4d);
+      box-shadow: 0 3px 0 #190104;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: transform 0.1s ease, box-shadow 0.1s ease, filter 0.1s ease, box-shadow 0.15s;
+      color: #1a0203;
+      max-width: 100%;
+    }
+
+    button.pixel-btn.secondary {
+      background: linear-gradient(#ff9688, #ff4a4a);
+      color: #fff7f3;
+    }
+
+    button.pixel-btn.ghost {
+      background: transparent;
+      color: #ffe9de;
+      border-color: #ffb9a0;
+      box-shadow: 0 3px 0 #190104;
+    }
+
+    button.pixel-btn.view-selected {
+      box-shadow:
+        0 3px 0 #190104,
+        0 0 12px 2px rgba(255, 213, 168, 0.8);
+      filter: brightness(1.04);
+    }
+
+    button.pixel-btn:hover { filter: brightness(1.05); }
+
+    button.pixel-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #190104;
+    }
+
+    .invite-block {
+      margin-top: 8px;
+      padding: 12px;
+      border: 2px solid #ffb9a0;
+      background: rgba(33, 2, 7, 0.9);
+      font-size: 9px;
+      line-height: 1.7;
+    }
+
+    .invite-block h2 {
+      font-size: 11px;
+      margin-bottom: 8px;
+    }
+
+    .date-line {
+      margin: 8px 0;
+      font-size: 10px;
+    }
+
+    .location {
+      font-size: 8px;
+      opacity: 0.9;
+      margin-bottom: 8px;
+    }
+
+    .dresscode-block {
+      margin-top: 10px;
+      padding: 8px;
+      border-radius: 4px;
+      background: rgba(120, 9, 22, 0.85);
+      border: 1px solid #ffb9a0;
+      font-size: 8px;
+      line-height: 1.6;
+    }
+
+    .dresscode-title {
+      font-size: 9px;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+
+    .rsvp-block {
+      margin-top: 12px;
+      border-top: 2px dashed #ffb9a0;
+      padding-top: 10px;
+      font-size: 9px;
+    }
+
+    .rsvp-block h3 {
+      font-size: 10px;
+      margin-bottom: 8px;
+    }
+
+    .rsvp-form {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .rsvp-form label {
+      font-size: 8px;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .rsvp-form input,
+    .rsvp-form select,
+    .rsvp-form textarea {
+      width: 100%;
+      padding: 6px 6px;
+      border: 2px solid #2b050b;
+      font-family: inherit;
+      font-size: 9px;
+      background: #fff8f1;
+      color: #1a0203;
+      outline: none;
+    }
+
+    .rsvp-form textarea {
+      resize: vertical;
+      min-height: 50px;
+    }
+
+    .rsvp-note {
+      font-size: 8px;
+      opacity: 0.75;
+      margin-top: 4px;
+    }
+
+    .rsvp-success {
+      font-size: 9px;
+      margin-top: 8px;
+      color: #c6ffb8;
+      display: none;
+      white-space: pre-line;
+    }
+
+    .console {
+      margin-top: 12px;
+      padding: 8px;
+      background: #150106;
+      border: 2px solid #5c1b1f;
+      font-family: "Press Start 2P", system-ui;
+      font-size: 8px;
+      line-height: 1.6;
+      height: 70px;
+      overflow: hidden;
+      white-space: pre-line;
+      color: #ffdcd0;
+    }
+
+    @media (max-width: 600px) {
+      .pixel-card {
+        padding: 20px 12px 22px;
+      }
+
+      .pixel-animals { height: 118px; }
+
+      .pixel-animal {
+        width: 76px;
+        height: 76px;
+        font-size: 30px;
+        bottom: 10px;
+      }
+
+      .pixel-header h1 { font-size: 11px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="pixel-card">
+      <div class="lantern-row">
+        <div class="lantern l1"></div>
+        <div class="lantern l2"></div>
+        <div class="lantern l3"></div>
+      </div>
+
+      <div class="pixel-header">
+        <h1>ЛИСЁНОК &amp; ЁЖИК</h1>
+        <div class="pixel-sub">свадебное приключение v2.0 · red lanterns edition</div>
+      </div>
+
+      <!-- Лабиринт-сближение -->
+      <div class="maze">
+        <div class="maze-line"></div>
+        <div id="maze-fox" class="maze-fox">🦊</div>
+        <div id="maze-hedgehog" class="maze-hedgehog">🦔</div>
+      </div>
+
+      <div class="pixel-animals">
+        <div class="street-line"></div>
+        <div class="ground"></div>
+
+        <div id="fox" class="pixel-animal fox">🦊</div>
+        <div id="hedgehog" class="pixel-animal hedgehog">🦔</div>
+        <div id="heart" class="pixel-heart">❤️</div>
+      </div>
+
+      <div class="timeline">
+        <span><span class="dot active" id="dot-1"></span>Шаг 1</span>
+        <span><span class="dot" id="dot-2"></span>Шаг 2</span>
+        <span><span class="dot" id="dot-3"></span>Шаг 3</span>
+        <span><span class="dot" id="dot-4"></span>Финал</span>
+      </div>
+
+      <!-- ЭКРАН 1 -->
+      <div class="screen active" id="screen-1">
+        <div class="story-text">
+          Вечером, под красными фонариками,  
+          вселенная запустила маленькую игру:  
+          «А что будет, если Лисёнка и Ёжика  
+          пустить по одной улочке судьбы?»
+
+          Чтобы начать историю, выберите, чьи шаги посмотреть первыми.
+        </div>
+
+        <div class="small-caption">
+          (спойлер: в финале они всё равно встречаются)
+        </div>
+
+        <div class="buttons-row">
+          <button id="btn-fox" class="pixel-btn" onclick="startPath('fox')">
+            ▶ Путь Лисёнка
+          </button>
+          <button id="btn-hedgehog" class="pixel-btn secondary" onclick="startPath('hedgehog')">
+            ▶ Путь Ёжика
+          </button>
+        </div>
+      </div>
+
+      <!-- ЭКРАН 2 -->
+      <div class="screen" id="screen-2">
+        <div class="story-text" id="path-text"></div>
+
+        <div class="buttons-row">
+          <button class="pixel-btn" onclick="nextScreen(3)">
+            ➜ Дальше по улочке
+          </button>
+          <button class="pixel-btn ghost" onclick="backToStart()">
+            ◀ Посмотреть с другого ракурса
+          </button>
+        </div>
+      </div>
+
+      <!-- ЭКРАН 3 — интерактивные блоки истории -->
+      <div class="screen" id="screen-3">
+        <div class="story-text" id="joint-text">
+          К тому моменту оба уже умели много:  
+          считать, проектировать, падать и вставать.  
+          Но не очень понимали, ради какой именно жизни  
+          всё это происходит.
+
+          Сейчас камера стоит за тем, чей путь вы выбрали.  
+          Можно переключаться, но главы чуть меняют оттенок.
+        </div>
+
+        <div class="buttons-row">
+          <button class="pixel-btn secondary" onclick="showExam()">
+            📚 Тот самый экзамен
+          </button>
+          <button class="pixel-btn secondary" onclick="showWalks()">
+            🚶 Прогулки и 35&nbsp;000 шагов
+          </button>
+          <button class="pixel-btn secondary" onclick="showPskov()">
+            🏰 Псков и крепости
+          </button>
+          <button class="pixel-btn secondary" onclick="showJapan()">
+            ✈️ Япония и экзамен
+          </button>
+        </div>
+
+        <div class="buttons-row" style="margin-top: 10px;">
+          <button class="pixel-btn" onclick="connectPaths()">
+            ❤ Соединить пути
+          </button>
+          <button class="pixel-btn ghost" onclick="backToStart()">
+            ◀ С начала истории
+          </button>
+        </div>
+      </div>
+
+      <!-- ЭКРАН 4 -->
+      <div class="screen" id="screen-4">
+        <div class="invite-block">
+          <h2>Приглашение под красными фонариками</h2>
+
+          <div class="date-line">
+            10 мая 2026 · воскресенье · 19:40
+          </div>
+          <div class="location">
+            Санкт-Петербург, Дворец бракосочетания №1  
+          </div>
+
+          <div class="story-text" style="margin-bottom: 6px;">
+            Мы, Лисёнок и Ёжик, официально  
+            фиксируем прогресс игры «Вместе»  
+            и зовём вас стать частью этого уровня —
+            нашего свадебного вечера.
+          </div>
+
+          <div class="dresscode-block">
+            <div class="dresscode-title">ДРЕСС-КОД (ПО ЖЕЛАНИЮ)</div>
+            Мы добавляем в наш день немного китайской магии и красных огоньков.  
+            Если вам будет удобно, будем очень рады, если вы поддержите  
+            атмосферу образом в оттенках:
+
+            красный, бордовый, гранатовый, чёрный, тёмно-синий, глубокое вино.
+
+            Это не строгие правила — важнее всего, чтобы вам было комфортно.  
+            Но если вы присоединитесь к цветовой волне,  
+            фотографии будут выглядеть как кадры из ночной азиатской улочки. ❤️
+          </div>
+
+          <div class="rsvp-block">
+            <h3>RSVP — будете ли вы с нами?</h3>
+
+            <form id="rsvp-form" class="rsvp-form">
+              <div>
+                <label for="name">Имя и фамилия</label>
+                <input id="name" name="name" type="text" required placeholder="Например: Тётя Марина" />
+              </div>
+
+              <div>
+                <label for="status">Ваш статус</label>
+                <select id="status" name="status" required>
+                  <option value="">Выберите вариант</option>
+                  <option value="Да, приду">Да, приду и принесу любовь</option>
+                  <option value="Пока не уверена">Пока не уверена, уточню позже</option>
+                  <option value="Не смогу">Не смогу, но буду с вами сердцем</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="plusone">Придёте ли вы с +1?</label>
+                <input id="plusone" name="plusone" type="text" placeholder="Например: да, с мужем / нет / с ребёнком" />
+              </div>
+
+              <div>
+                <label for="song">Песня, под которую вы хотите нас видеть или танцевать</label>
+                <input id="song" name="song" type="text" placeholder="Можно трек или просто «что-нибудь медленное»" />
+              </div>
+
+              <div>
+                <label for="message">Сообщение для Лисёнка и Ёжика</label>
+                <textarea id="message" name="message" placeholder="Пожелания, шутки, угрозы обнять — всё сюда"></textarea>
+              </div>
+
+              <button type="submit" class="pixel-btn">
+                ✔ Отправить RSVP
+              </button>
+
+              <div class="rsvp-note">
+                Форма работает как пиксельная магия:  
+                данные увидят только Лисёнок и Ёжик  
+                (и тот, кто откроет этот файл 😌).
+              </div>
+            </form>
+
+            <div id="rsvp-success" class="rsvp-success">
+              Спасибо!  
+              Ваш RSVP сохранён в сердечной памяти Лисёнка и Ёжика 💾❤️
+            </div>
+          </div>
+        </div>
+
+        <div class="buttons-row" style="margin-top: 10px;">
+          <button class="pixel-btn ghost" onclick="backToStart()">
+            ◀ Ещё раз пройти историю
+          </button>
+        </div>
+      </div>
+
+      <div class="console" id="console">
+        > Запуск ночной улочки...  
+        > Загрузка Лисёнка и Ёжика под красными фонариками...  
+        > Ожидание выбора пути...
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const screens = {
+      1: document.getElementById("screen-1"),
+      2: document.getElementById("screen-2"),
+      3: document.getElementById("screen-3"),
+      4: document.getElementById("screen-4"),
+    };
+
+    const dots = {
+      1: document.getElementById("dot-1"),
+      2: document.getElementById("dot-2"),
+      3: document.getElementById("dot-3"),
+      4: document.getElementById("dot-4"),
+    };
+
+    const fox = document.getElementById("fox");
+    const hedgehog = document.getElementById("hedgehog");
+    const heart = document.getElementById("heart");
+    const consoleBox = document.getElementById("console");
+    const pathText = document.getElementById("path-text");
+    const jointText = document.getElementById("joint-text");
+    const rsvpForm = document.getElementById("rsvp-form");
+    const rsvpSuccess = document.getElementById("rsvp-success");
+    const btnFox = document.getElementById("btn-fox");
+    const btnHedgehog = document.getElementById("btn-hedgehog");
+    const mazeFox = document.getElementById("maze-fox");
+    const mazeHedgehog = document.getElementById("maze-hedgehog");
+
+    let currentView = null;   // 'fox' или 'hedgehog'
+    let mazeStep = 0;         // 0..4
+
+    function logToConsole(text) {
+      consoleBox.textContent = text;
+    }
+
+    function setActiveDot(step) {
+      Object.keys(dots).forEach((key) => dots[key].classList.remove("active"));
+      dots[step].classList.add("active");
+    }
+
+    function showScreen(num) {
+      Object.keys(screens).forEach((key) => screens[key].classList.remove("active"));
+      screens[num].classList.add("active");
+      setActiveDot(num);
+    }
+
+    function resetAnimals() {
+      fox.style.transform = "translateX(0)";
+      hedgehog.style.transform = "translateX(0)";
+      heart.classList.remove("visible");
+    }
+
+    function updateViewHighlight() {
+      fox.classList.remove("active");
+      hedgehog.classList.remove("active");
+      btnFox.classList.remove("view-selected");
+      btnHedgehog.classList.remove("view-selected");
+
+      if (currentView === "fox") {
+        fox.classList.add("active");
+        btnFox.classList.add("view-selected");
+      } else if (currentView === "hedgehog") {
+        hedgehog.classList.add("active");
+        btnHedgehog.classList.add("view-selected");
+      }
+    }
+
+    function advanceMaze() {
+      mazeStep = Math.min(mazeStep + 1, 4);
+      // 0: далеко, 4: очень близко
+      const foxPos = 4 + mazeStep * 9;   // в процентах
+      const hedgehogPos = 4 + mazeStep * 9;
+      mazeFox.style.left = foxPos + "%";
+      mazeHedgehog.style.right = hedgehogPos + "%";
+    }
+
+    function ensureView() {
+      if (!currentView) {
+        currentView = "fox";
+        updateViewHighlight();
+      }
+    }
+
+    function startPath(who) {
+      resetAnimals();
+      currentView = who;
+      updateViewHighlight();
+      showScreen(2);
+
+      if (who === "fox") {
+        pathText.textContent =
+          "Путь Лисёнка загружен.\n\n" +
+          "Лисёнок учился на инженера биомедицинской техники, " +
+          "учил китайский, мечтал о магистратуре в Китае, " +
+          "фотографировал улочки и людей и пытался совместить это всё " +
+          "с лабораторными, ПЛИС и дедлайнами.\n\n" +
+          "Внутри иногда было ощущение, что мир огромный, " +
+          "возможностей много, а опоры как будто нет. " +
+          "Но где-то рядом уже шёл один Ёжик, " +
+          "который очень пригодится для пункта «дом».";
+        logToConsole(
+          "> Режим наблюдения: Лисёнок\n" +
+          "> Параметры: китайский, фотоаппарат, чемодан, ПЛИС\n" +
+          "> Статус: способен(а) на многое, но ещё ищет точку опоры"
+        );
+      } else {
+        pathText.textContent =
+          "Путь Ёжика загружен.\n\n" +
+          "Ёжик — староста, инженер, человек «я всё разрулю». " +
+          "В прошлом — фигурист, который привык держать равновесие " +
+          "на льду, играть на скрипке и даже в группе.\n\n" +
+          "Про переезды в Азию он не то что не мечтал — " +
+          "он в целом не думал, что жизнь может так вывезти. " +
+          "Была работа, ответственность, люди вокруг, но " +
+          "как будто без чёткой личной мечты.\n\n" +
+          "Вселенная поставила пометку: «надо добавить " +
+          "немного импульсивного солнца».";
+        logToConsole(
+          "> Режим наблюдения: Ёжик\n" +
+          "> Параметры: фигурист, староста, скрипка, группа\n" +
+          "> Статус: очень устойчивый, но пока без мечты про Азию"
+        );
+      }
+    }
+
+    function nextScreen(num) {
+      showScreen(num);
+      if (num === 3) {
+        ensureView();
+        jointText.textContent =
+          "К тому моменту оба уже умели много:  " +
+          "считать, проектировать, падать и вставать.  \n" +
+          "Но не очень понимали, ради какой именно жизни  \n" +
+          "всё это происходит.\n\n" +
+          "Сейчас камера смотрит глазами " +
+          (currentView === "fox" ? "Лисёнка." : "Ёжика.") +
+          " Можно переключать взгляд, " +
+          "и каждая глава чуть меняет оттенок.";
+        logToConsole(
+          "> Открыт общий таймлайн\n" +
+          "> Камера: " + (currentView === "fox" ? "Лисёнок" : "Ёжик") + "\n" +
+          "> Доступны главы: экзамен, прогулки, Псков, Япония"
+        );
+      }
+    }
+
+    function showExam() {
+      ensureView();
+      advanceMaze();
+
+      if (currentView === "fox") {
+        jointText.textContent =
+          "Экзамен глазами Лисёнка.\n\n" +
+          "Знакомы — лет пять, но всё всегда было «как-то рядом». " +
+          "В тот апрельский день Лисёнок честно завалил билет " +
+          "и сидел с ощущением, что мир рухнул и он ничего не стоит.\n\n" +
+          "Ёжик сдал и мог уйти, но просто встал рядом и молча стоял, " +
+          "ничего не требуя, не давая советов, просто — был.\n\n" +
+          "Потом Лисёнок сделал то, чего сам от себя не ожидал: " +
+          "первым написал Ёжику и позвал в библиотеку. " +
+          "С тех пор во внутреннем протоколе Лисёнка зафиксировано: " +
+          "«я реально умею делать первые шаги, даже когда страшно».";
+      } else {
+        jointText.textContent =
+          "Экзамен глазами Ёжика.\n\n" +
+          "Очередной стрессовый день, билет, который надо вытянуть, " +
+          "и знакомая группа вокруг. Ёжик привык справляться: " +
+          "сдал — можно выдохнуть.\n\n" +
+          "Он увидел Лисёнка, который сидит совсем поникший, " +
+          "и не придумал ни одной правильной фразы. " +
+          "Поэтому просто встал рядом и остался. " +
+          "Без речей, без «ну ты не переживай», просто молчаливой опорой.\n\n" +
+          "Он не ожидал, что после этого ему напишут первым " +
+          "и позовут в библиотеку. " +
+          "Этот маленький значок в мессенджере стал началом " +
+          "очень большой переписки.";
+      }
+
+      logToConsole(
+        "> Глава: экзамен (" + (currentView === "fox" ? "вид от Лисёнка" : "вид от Ёжика") + ")\n" +
+        "> Лабиринт: герои продвинулись ближе друг к другу"
+      );
+    }
+
+    function showWalks() {
+      ensureView();
+      advanceMaze();
+
+      if (currentView === "fox") {
+        jointText.textContent =
+          "Прогулки глазами Лисёнка.\n\n" +
+          "Сначала это были просто «давай выйдем на чуть-чуть», " +
+          "а потом ноги сами стали собирать по 30–35 тысяч шагов.\n\n" +
+          "Каждое воскресенье — почти ритуал: ВДНХ, " +
+          "школьная физкультура в модификации 2.0, " +
+          "где можно обсуждать китайский, ПЛИС, смыслы жизни " +
+          "и то, почему люки выглядят как маленькие порталы.\n\n" +
+          "Для Лисёнка город впервые стал местом, " +
+          "где не хочется убежать дальше — " +
+          "потому что рядом идёт свой человек.";
+      } else {
+        jointText.textContent =
+          "Прогулки глазами Ёжика.\n\n" +
+          "35 тысяч шагов — это вообще-то много. " +
+          "Но с Лисёнком почему-то ок.\n\n" +
+          "ВДНХ по воскресеньям, бесконечные круги, " +
+          "перекусы, разговоры, внезапные фото и " +
+          "импульсивные «а пойдём ещё туда».\n\n" +
+          "Ёжик, привыкший планировать и контролировать, " +
+          "вдруг обнаружил, что может просто идти, " +
+          "не ругаясь на лишние километры, " +
+          "и чувствовать, что это — очень правильный маршрут.";
+      }
+
+      logToConsole(
+        "> Глава: прогулки (" + (currentView === "fox" ? "вид от Лисёнка" : "вид от Ёжика") + ")\n" +
+        "> Шаги: 30–35k, ВДНХ, разговоры"
+      );
+    }
+
+    function showPskov() {
+      ensureView();
+      advanceMaze();
+
+      if (currentView === "fox") {
+        jointText.textContent =
+          "Псков глазами Лисёнка.\n\n" +
+          "Поездка, которая в голове была про «тихо отдохнуть», " +
+          "началась с хаоса: отменённый рейс, дроны в новостях, " +
+          "аэропорт, паника и много ненужных сценариев в голове.\n\n" +
+          "Решение ехать через Петербург, предрассвет, " +
+          "дорогие такси, отсутствие сна — и рядом человек, " +
+          "рядом с которым почему-то не так страшно.\n\n" +
+          "Потом Псков: барсики на люках, крепости, " +
+          "тихий монастырь, вода, " +
+          "музейные люди, которые рассказывают о городе " +
+          "так, будто это живой зверь.\n\n" +
+          "Где-то между крепостными стенами и тишиной у реки " +
+          "стало ясно: можно строить свою личную крепость, " +
+          "где слухи не разрушают, а подкопы только укрепляют фундамент.";
+      } else {
+        jointText.textContent =
+          "Псков глазами Ёжика.\n\n" +
+          "Сначала всё выглядело как задачка по логистике: " +
+          "рейс отменили, нужно найти маршрут, " +
+          "разобраться с билетами, такси, временем.\n\n" +
+          "В фоне — напряжённые новости и очень тревожный Лисёнок, " +
+          "которого хочется защитить хотя бы тем, " +
+          "что всё будет организовано.\n\n" +
+          "Потом дорога через Петербург, поезд, автобус — " +
+          "и вдруг Псков: камень, вода, крепости, тишина.\n\n" +
+          "Для Ёжика это неожиданно стало местом, " +
+          "где мозг выключает режим «староста всего мира» " +
+          "и просто дышит рядом с тем, кого очень не хочется терять.";
+      }
+
+      logToConsole(
+        "> Глава: Псков (" + (currentView === "fox" ? "вид от Лисёнка" : "вид от Ёжика") + ")\n" +
+        "> Состояние: хаос на входе, крепость на выходе"
+      );
+    }
+
+    function showJapan() {
+      ensureView();
+      advanceMaze();
+
+      if (currentView === "fox") {
+        jointText.textContent =
+          "Япония глазами Лисёнка.\n\n" +
+          "Ещё одна страна, ещё один язык, " +
+          "экзамен по английскому и ощущение, " +
+          "что мир снова открыл новую карту.\n\n" +
+          "Только в этот раз всё иначе: " +
+          "раньше после путешествий не хотелось возвращаться, " +
+          "дом казался чем-то временным.\n\n" +
+          "А теперь в голове вдруг появилась мысль: " +
+          "«хочу домой к человеку». " +
+          "И это оказалось новым, очень тёплым видом счастья.";
+      } else {
+        jointText.textContent =
+          "Япония глазами Ёжика.\n\n" +
+          "Страна, которая раньше была просто где-то далёким фоном: " +
+          "аниме, картинки, чужие истории.\n\n" +
+          "Вдруг — реальность: поезда, иероглифы, " +
+          "экзамен по английскому, усталость и смех, " +
+          "много непривычного вокруг.\n\n" +
+          "Ёжик, который никогда всерьёз не думал " +
+          "ни о переездах, ни о жизни в Азии, " +
+          "вдруг ловит себя на том, что ему не страшно " +
+          "рассматривать это как вариант — " +
+          "пока рядом идёт Лисёнок.";
+      }
+
+      logToConsole(
+        "> Глава: Япония (" + (currentView === "fox" ? "вид от Лисёнка" : "вид от Ёжика") + ")\n" +
+        "> Итог: другая страна, но один и тот же «дом»"
+      );
+    }
+
+    function connectPaths() {
+      showScreen(3);
+
+      fox.style.transform = "translateX(70px)";
+      logToConsole(
+        "> Инициация соединения путей\n" +
+        "> По протоколу первым двигается Лисёнок (как и в жизни)\n" +
+        "> Ёжик готовится шагнуть навстречу..."
+      );
+
+      setTimeout(() => {
+        hedgehog.style.transform = "translateX(-90px)";
+      }, 230);
+
+      setTimeout(() => {
+        heart.classList.add("visible");
+      }, 500);
+
+      setTimeout(() => {
+        showScreen(4);
+        logToConsole(
+          "> Сигнал любви стабилен\n" +
+          "> Дата зафиксирована: 10.05.2026 19:40\n" +
+          "> Переход в режим свадебного приглашения"
+        );
+      }, 1000);
+    }
+
+    function backToStart() {
+      resetAnimals();
+      showScreen(1);
+      rsvpSuccess.style.display = "none";
+      rsvpForm.style.display = "flex";
+      rsvpForm.reset();
+      currentView = null;
+      mazeStep = 0;
+      mazeFox.style.left = "4%";
+      mazeHedgehog.style.right = "4%";
+      updateViewHighlight();
+      logToConsole(
+        "> Возврат к началу истории\n" +
+        "> Красные фонарики загружены заново\n" +
+        "> Можно снова выбирать точку зрения :)"
+      );
+    }
+
+    rsvpForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById("name").value || "Гость";
+      const status = document.getElementById("status").value || "не указан";
+      const plusone = document.getElementById("plusone").value || "не указан";
+      const song = document.getElementById("song").value || "не указана";
+      const message = document.getElementById("message").value || "—";
+
+      // 👉 ВПИШИ СВОЮ ПОЧТУ СЮДА:
+      const emailTo = "your_email@example.com";
+
+      const subject = `RSVP на свадьбу Лисёнка и Ёжика — ${name}`;
+      const body =
+        `Имя: ${name}\n` +
+        `Статус: ${status}\n` +
+        `+1: ${plusone}\n` +
+        `Песня: ${song}\n` +
+        `Сообщение:\n${message}\n\n` +
+        `Авто-письмо со свадебного сайта 🦊🦔`;
+
+      const mailtoLink =
+        "mailto:" +
+        encodeURIComponent(emailTo) +
+        "?subject=" +
+        encodeURIComponent(subject) +
+        "&body=" +
+        encodeURIComponent(body);
+
+      window.location.href = mailtoLink;
+
+      rsvpForm.style.display = "none";
+      rsvpSuccess.style.display = "block";
+
+      logToConsole(
+        `> RSVP подготовлен к отправке\n` +
+        `> Получатель: ${emailTo}\n` +
+        `> ${name}, спасибо, что вы с нами под красными фонариками ❤️`
+      );
+    });
+  </script>
+</body>
+</html>
